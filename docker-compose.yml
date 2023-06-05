@@ -1,0 +1,37 @@
+version: '3.1'
+
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+  kafka:
+    image: wurstmeister/kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: localhost
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+
+
+  postgres:
+    container_name: postgres
+    image: postgres:11
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: micro_db
+    ports:
+      - "5437:5432"       #захочется поменять, меняем левый(!) порт, доступ к бд jdbc:postgresql://localhost:5437/airline_db?useUnicode=yes&characterEncoding=UTF-8&serverTimezone=Europe/Moscow
+    restart: unless-stopped
+  pgadmin: # если бд не подключается или что-то не так, можно подключить и посмотреть здесь, НЕ используем localhost, используем порт докера
+      image: dpage/pgadmin4
+      container_name: pgadmin4_container
+      restart: always
+      ports:
+        - "5050:80"
+      environment:
+        PGADMIN_DEFAULT_EMAIL: 111@mail.com
+        PGADMIN_DEFAULT_PASSWORD: admin
